@@ -18,10 +18,9 @@ CREATE TABLE users_master (
 
 CREATE TABLE driver(
     person_id INT PRIMARY KEY,
-    assigned_vehicle VARCHAR(50) NOT NULL,
+    assigned_vehicle VARCHAR(50),
     Foreign Key (person_id) REFERENCES users_master(person_id)
 );
-
 CREATE TABLE admin(
     person_id INT PRIMARY KEY,
     warehouse_id INT,
@@ -109,3 +108,56 @@ END$$
 
 
 DELIMITER ;
+
+
+INSERT INTO training_sessions(session_name, trainer_name, session_date) VALUES
+('Safety First','Omar Ahmed','2026-02-01'),
+('Food Handling','Maryam Mohsen','2025-12-31'),
+('Warehouse Management','Eslam Alaa','2026-03-11'),
+('Emergency Response','Sayed Ali','2025-11-16'),
+('Logistics Basics','Sara Ibrahim','2026-01-09');
+
+INSERT INTO users_master(full_name, gender, address, phone, age) VALUES
+('Omar Ahmed','M','Cairo','01001689135', 19),
+('Maryam Mohsen','F','Sharqia','01065981532', 20),
+('Hosam ElSayed','M','Mansoura','01035974561', 21),
+('Zeyad Mohamed','M','Cairo','01532945326',20),
+('Farah Hatem','F','Cairo','01232659819',20);
+
+INSERT INTO driver (person_id) VALUES (1),(2),(3),(4),(5);
+
+
+--needs data from warehouse
+INSERT INTO admin(person_id, warehouse_id) VALUES
+(1,2),
+(2,1),
+(3,4),
+(4,3),
+(5,5);
+
+INSERT INTO beneficiary(person_id,family_members_count,last_received_date,poverty_score) VALUES
+(1, 5, '2026-03-11', 8),
+(2, 6, '2026-03-01', 7),
+(3, 2, '2026-02-11', 9),
+(4, 4, '2026-01-09', 6),
+(5, 7, '2025-12-26', 10);
+
+--needs data from warehouse
+INSERT INTO volunteer(person_id, years_of_experience, warehouse_id) VALUES
+(1,2,1),
+(2,3,2),
+(3,1,3),
+(4,4,4),
+(5,5,5);
+
+INSERT INTO driver_training(driver_id, session_id) VALUES
+(1,1),
+(2,1),
+(3,2),
+(4,3),
+(5,1);
+
+UPDATE driver SET assigned_vehicle = 'Truck-1' WHERE person_id = 1;
+UPDATE driver SET assigned_vehicle = 'Truck-2' WHERE person_id = 2;
+UPDATE driver SET assigned_vehicle = 'Truck-3' WHERE person_id = 5;
+
