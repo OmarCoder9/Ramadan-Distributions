@@ -28,6 +28,7 @@ CREATE TABLE Inventory_Items (
     name VARCHAR(100) NOT NULL,
     quantity_kg DECIMAL(10,2) NOT NULL,
     expiry_date DATE NOT NULL,
+    is_assigned_to_dry_box TINYINT(1) DEFAULT 0,
     warehouse_id INT NOT NULL,
     category_id INT NOT NULL,
     donation_id INT,
@@ -36,3 +37,26 @@ CREATE TABLE Inventory_Items (
     FOREIGN KEY (donation_id) REFERENCES Donations_Log(donation_id)
 );
 
+DELIMITER $$
+
+CREATE TRIGGER check_dry_box_expiry_before_insert
+BEFORE INSERT ON Inventory_Items
+FOR EACH ROW
+BEGIN
+    IF NEW.is_assigned_to_dry_box = 1 AND DATEDIFF(NEW.expiry_date, CURDATE()) <= 3 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Error: Near-expiry items (<= 3 days) cannot be entered as Dry Box items!';
+    END IF;
+END$$
+
+CREATE TRIGGER check_dry_box_expiry_before_update
+BEFORE UPDATE ON Inventory_Items
+FOR EACH ROW
+BEGIN
+    IF NEW.is_assigned_to_dry_box = 1 AND DATEDIFF(NEW.expiry_date, CURDATE()) <= 3 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Error: This item is near expiry (<= 3 days) and cannot be assigned to Dry Boxes.';
+    END IF;
+END$$
+
+DELIMITER ;
