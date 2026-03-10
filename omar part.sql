@@ -76,6 +76,25 @@ BEGIN
     END IF;
 END$$
 
+
+CREATE TRIGGER check_safety_training_insert
+BEFORE INSERT ON driver
+FOR EACH ROW
+BEGIN
+    IF NEW.assigned_vehicle IS NOT NULL THEN
+        IF NOT EXISTS(
+            SELECT 1
+            FROM driver_training dt JOIN training_sessions ts
+            ON dt.session_id = ts.session_id
+            WHERE dt.driver_id = NEW.person_id
+            AND ts.session_name = 'Safety First'
+        )THEN 
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'Driver must complete Safety First training before being assigned to a vehicle';
+        END IF;
+    END IF;
+END$$
+
 CREATE TRIGGER check_15day_rule
 BEFORE UPDATE ON beneficiary
 FOR EACH ROW
