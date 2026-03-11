@@ -91,3 +91,25 @@ Together, **Backup & Recovery** ensures that data can be restored if somthing ha
 |Backup & Recovery|Protects data and allows restoration after failures|
 
 This techniques help to ensure that databases remain **efficient**, **reliable**, **secure**.
+
+
+# Brief on our Database 
+
+our Database has 11 table 
+
+our users master table
+this table contains the data for each person in this foundation even if he is a driver, admin and so on 
+but every role has it's characteristic attributes so we created a four subclasses from it 
+
+* **driver** which has the attribute assigned_vehicle and has the ability to take a training_sessions.
+* **admin** which has the ability to manage a warehouse.
+* **volunteer** which has skills and years of experince and has the ability to work in a warehouse.
+* **Beneficiary** which has a family_member_count, poverty_score, and last_recived_date (The beneficary can't have to boxes within 15 days)
+
+training_sessions table which has it's name and trainer name and it's date
+
+warehouse table wich has the ability to store inventory items
+
+Donations_log which contains many inventory items 
+every inventory item categorized as food category
+

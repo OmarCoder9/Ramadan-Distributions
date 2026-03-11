@@ -10,7 +10,7 @@ CREATE TABLE training_sessions (
 CREATE TABLE users_master (
     person_id INT PRIMARY KEY AUTO_INCREMENT,
     full_name VARCHAR(255) NOT NULL,
-    gender CHAR NOT NULL,
+    gender CHAR(1) NOT NULL,
     address VARCHAR(100) NOT NULL,
     phone VARCHAR(20),
     age INT
@@ -18,7 +18,7 @@ CREATE TABLE users_master (
 
 CREATE TABLE driver(
     person_id INT PRIMARY KEY,
-    assigned_vehicle VARCHAR(50) NOT NULL,
+    assigned_vehicle VARCHAR(50),
     Foreign Key (person_id) REFERENCES users_master(person_id)
 );
 
@@ -254,7 +254,7 @@ WHERE c.food_type = 'Fresh'
 AND w.name = 'Zagazig Warehouse'
 AND i.expiry_date <= DATE_ADD(NOW(), INTERVAL 48 HOUR);
 
---Query to find all drivers who have completed the 'Safety First' training
+--Query to find all drivers who have not completed the 'Safety First' training
 SELECT um.full_name
 FROM users_master um
 JOIN driver d ON um.person_id = d.person_id
