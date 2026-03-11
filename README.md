@@ -92,24 +92,184 @@ Together, **Backup & Recovery** ensures that data can be restored if somthing ha
 
 This techniques help to ensure that databases remain **efficient**, **reliable**, **secure**.
 
+# Ramadan Distributions Database – Brief Overview
 
-# Brief on our Database 
+## 1. Introduction
 
-our Database has 11 table 
+The **Ramadan Distributions Database** is designed to manage and organize food aid distribution during Ramadan.
+It supports the coordination of **beneficiaries, volunteers, drivers, warehouses, food inventory, donations, and training sessions** to ensure fair and efficient distribution of food supplies.
 
-our users master table
-this table contains the data for each person in this foundation even if he is a driver, admin and so on 
-but every role has it's characteristic attributes so we created a four subclasses from it 
+The system also enforces important **business rules using database triggers** to maintain data integrity and prevent operational mistakes.
 
-* **driver** which has the attribute assigned_vehicle and has the ability to take a training_sessions.
-* **admin** which has the ability to manage a warehouse.
-* **volunteer** which has skills and years of experince and has the ability to work in a warehouse.
-* **Beneficiary** which has a family_member_count, poverty_score, and last_recived_date (The beneficary can't have to boxes within 15 days)
+<hr/>
 
-training_sessions table which has it's name and trainer name and it's date
+## 2. Main Entities
 
-warehouse table wich has the ability to store inventory items
+### Users Master (Superclass)
 
-Donations_log which contains many inventory items 
-every inventory item categorized as food category
+The `users_master` table acts as a **central directory for all people in the system**.
 
+It stores general information such as:
+
+* Full name
+* Gender
+* Address
+* Phone number
+* Age
+
+Each user receives a unique `person_id`.
+
+### Subclasses of Users
+
+The system implements **specialized roles** using separate tables linked to `users_master`.
+
+| Table         | Description                                        |
+| ------------- | -------------------------------------------------- |
+| `driver`      | Drivers responsible for transporting food supplies |
+| `admin`       | Administrators managing warehouses                 |
+| `volunteer`   | Volunteers assisting in warehouse operations       |
+| `beneficiary` | Families receiving food aid                        |
+
+Each subclass uses `person_id` as a **primary key and foreign key** referencing `users_master`.
+
+<hr/>
+
+## 3. Training Management
+
+### Training Sessions
+
+The `training_sessions` table stores information about training programs such as:
+
+* Safety training
+* Food handling
+* Logistics management
+
+Attributes include:
+
+* `session_name`
+* `trainer_name`
+* `session_date`
+
+### Driver Training
+
+The `driver_training` table represents a **many-to-many relationship** between drivers and training sessions.
+
+A driver can attend multiple sessions, and each session can have multiple drivers.
+
+Primary Key:
+
+```
+(driver_id, session_id)
+```
+
+<hr/>
+
+## 4. Warehousing System
+
+### Warehouses
+
+The `warehouses` table stores warehouse details including:
+
+* Warehouse name
+* Location
+* Maximum capacity
+* Operational status
+
+Warehouse status is restricted using an `ENUM`:
+
+* Open
+* Full
+* Maintenance
+
+Admins and volunteers are assigned to warehouses through foreign key relationships.
+
+<hr/>
+
+## 5. Food Management
+
+### Food Categories
+
+The `food_categories` table classifies food items into three types:
+
+* Dry
+* Fresh
+* Cooked
+
+Each category also stores the **required storage temperature**.
+
+### Inventory Items
+
+The `inventory_items` table tracks food stored in warehouses.
+
+Important attributes:
+
+* Item name
+* Quantity (kg)
+* Expiry date
+* Warehouse location
+* Food category
+* Donation source
+
+Items may optionally be **assigned to dry food boxes** for distribution.
+
+<hr/>
+
+## 6. Donation Tracking
+
+The `donations_log` table records all donations received by the organization.
+
+It includes:
+
+* Donor name
+* Donation value
+* Donation type (Cash or Food)
+* Organization type (Individual, Company, NGO)
+
+This allows tracking of **financial contributions and food donations**.
+
+<hr/>
+
+## 7. Business Rules (Triggers)
+
+Several **database triggers enforce operational rules**.
+
+### Driver Safety Rule
+
+A driver **cannot be assigned a vehicle** unless they have completed the **"Safety First" training session**.
+
+This rule is enforced on:
+
+* Driver insertion
+* Driver updates
+
+<hr/>
+
+### Beneficiary Distribution Rule
+
+A beneficiary **cannot receive a second food box within 15 days** of their previous distribution.
+
+This prevents unfair distribution of aid.
+
+<hr/>
+
+### Dry Box Expiry Rule
+
+Food items that will expire within **3 days or less** cannot be assigned to **dry food boxes**.
+
+This ensures that only safe food items are distributed.
+
+<hr/>
+
+# 8. Conclusion
+
+The **Ramadan Distributions Database** provides a structured system for managing humanitarian food distribution.
+
+It combines:
+
+* **Relational database design**
+* **Role specialization**
+* **Inventory management**
+* **Donation tracking**
+* **Automated business rules through triggers**
+
+This ensures **efficient operations, fair distribution, and data integrity** during large-scale food aid campaigns.
