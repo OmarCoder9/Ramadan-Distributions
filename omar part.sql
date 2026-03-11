@@ -1,5 +1,5 @@
 CREATE DATABASE Ramadan_distributions;
-
+USE Ramadan_distributions;
 CREATE TABLE training_sessions (
     session_id INT PRIMARY KEY AUTO_INCREMENT,
     session_name VARCHAR(100) NOT NULL,
@@ -109,7 +109,7 @@ END$$
 
 DELIMITER ;
 
-
+USE Ramadan_distributions;
 INSERT INTO training_sessions(session_name, trainer_name, session_date) VALUES
 ('Safety First','Omar Ahmed','2026-02-01'),
 ('Food Handling','Maryam Mohsen','2025-12-31'),
@@ -122,7 +122,7 @@ INSERT INTO users_master(full_name, gender, address, phone, age) VALUES
 ('Maryam Mohsen','F','Sharqia','01065981532', 20),
 ('Hosam ElSayed','M','Mansoura','01035974561', 21),
 ('Zeyad Mohamed','M','Cairo','01532945326',20),
-('Farah Hatem','F','Cairo','01232659819',20);
+('Farah Hatem','F','Minya Al-Qamh','01232659819',20);
 
 INSERT INTO driver (person_id) VALUES (1),(2),(3),(4),(5);
 
@@ -160,4 +160,23 @@ INSERT INTO driver_training(driver_id, session_id) VALUES
 UPDATE driver SET assigned_vehicle = 'Truck-1' WHERE person_id = 1;
 UPDATE driver SET assigned_vehicle = 'Truck-2' WHERE person_id = 2;
 UPDATE driver SET assigned_vehicle = 'Truck-3' WHERE person_id = 5;
+
+USE Ramadan_distributions;
+
+SELECT um.full_name
+FROM users_master um
+JOIN driver d ON um.person_id = d.person_id
+WHERE d.person_id NOT IN (
+    SELECT dt.driver_id 
+    FROM driver_training dt
+    JOIN training_sessions ts ON dt.session_id = ts.session_id
+    WHERE ts.session_name = 'Safety First'
+);
+
+SELECT um.full_name, b.poverty_score, b.last_received_date
+FROM users_master um
+JOIN beneficiary b ON um.person_id = b.person_id
+WHERE um.address LIKE '%Minya Al-Qamh%'
+AND b.poverty_score > 8
+AND (b.last_received_date <= DATE_SUB(CURDATE(), INTERVAL 15 DAY) OR b.last_received_date IS NULL);
 
